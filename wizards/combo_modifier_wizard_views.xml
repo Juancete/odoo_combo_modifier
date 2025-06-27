@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista de formulario para el wizard de modificación de combo -->
+    <record id="combo_modifier_wizard_form_view" model="ir.ui.view">
+        <field name="name">combo.modifier.wizard.form</field>
+        <field name="model">combo.modifier.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Modificar Combo">
+                <sheet>
+                    <group>
+                        <field name="product_id" readonly="1"/>
+                        <field name="order_line_id" invisible="1"/>
+                        <field name="move_line_id" invisible="1"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="Componentes del Combo">
+                            <field name="combo_line_ids">
+                                <tree string="Componentes" editable="bottom">
+                                    <field name="included" widget="boolean_toggle"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="original_quantity" readonly="1"/>
+                                    <field name="quantity" 
+                                           readonly="not included or required"
+                                           decoration-muted="not included"/>
+                                    <field name="price_extra" readonly="1"/>
+                                    <field name="required" invisible="1"/>
+                                    <button name="%(action_remove_component)d" 
+                                            type="action" 
+                                            string="Eliminar" 
+                                            icon="fa-trash"
+                                            invisible="required"
+                                            confirm="¿Está seguro de que desea eliminar este componente?"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <footer>
+                    <button name="action_apply_changes" 
+                            type="object" 
+                            string="Aplicar Cambios" 
+                            class="btn-primary"/>
+                    <button string="Cancelar" 
+                            class="btn-secondary" 
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Acción para abrir el wizard -->
+    <record id="action_combo_modifier_wizard" model="ir.actions.act_window">
+        <field name="name">Modificar Combo</field>
+        <field name="res_model">combo.modifier.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <!-- Acción para eliminar componente -->
+    <record id="action_remove_component" model="ir.actions.server">
+        <field name="name">Eliminar Componente</field>
+        <field name="model_id" ref="model_combo_modifier_wizard_line"/>
+        <field name="state">code</field>
+        <field name="code">
+            for record in records:
+                if not record.required:
+                    record.included = False
+                    record.quantity = 0.0
+        </field>
+    </record>
+</odoo>
+

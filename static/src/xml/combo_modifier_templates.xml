@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <!-- Plantilla para el botón de modificar combo -->
+    <t t-name="ComboModifierButton" owl="1">
+        <button type="button" 
+                class="btn btn-sm btn-primary combo-modifier-btn"
+                t-on-click="onComboModifierClick"
+                t-att-disabled="!isComboProduct">
+            <i class="fa fa-cogs"/> Modificar Combo
+        </button>
+    </t>
+
+    <!-- Plantilla para mostrar el resumen del combo en la línea -->
+    <t t-name="ComboSummary" owl="1">
+        <div class="combo-summary">
+            <small class="text-muted">
+                <t t-if="comboComponents.length > 0">
+                    Componentes: 
+                    <t t-foreach="comboComponents" t-as="component" t-key="component.id">
+                        <span t-att-class="component.included ? '' : 'combo-component-excluded'">
+                            <t t-esc="component.product_name"/>
+                            <t t-if="component.quantity != component.original_quantity">
+                                (<t t-esc="component.quantity"/>)
+                            </t>
+                        </span>
+                        <t t-if="!component_last">, </t>
+                    </t>
+                </t>
+                <t t-else="">
+                    Combo sin componentes
+                </t>
+            </small>
+        </div>
+    </t>
+
+    <!-- Plantilla para el wizard de modificación -->
+    <t t-name="ComboModifierWizard" owl="1">
+        <div class="combo-modifier-wizard">
+            <div class="modal-header">
+                <h4 class="modal-title">Modificar Combo: <t t-esc="productName"/></h4>
+            </div>
+            
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fa fa-info-circle"/> 
+                    Puede modificar las cantidades de los componentes o eliminar componentes del combo.
+                    Los componentes marcados como requeridos no pueden ser eliminados.
+                </div>
+                
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Incluido</th>
+                            <th>Componente</th>
+                            <th>Cantidad Original</th>
+                            <th>Cantidad</th>
+                            <th>Precio Extra</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="comboLines" t-as="line" t-key="line.id">
+                            <tr t-att-class="line.included ? '' : 'combo-component-excluded'">
+                                <td>
+                                    <input type="checkbox" 
+                                           t-att-checked="line.included"
+                                           t-att-disabled="line.required"
+                                           t-on-change="onIncludedChange"/>
+                                </td>
+                                <td>
+                                    <t t-esc="line.product_name"/>
+                                    <t t-if="line.required">
+                                        <span class="badge badge-warning">Requerido</span>
+                                    </t>
+                                </td>
+                                <td><t t-esc="line.original_quantity"/></td>
+                                <td>
+                                    <input type="number" 
+                                           class="form-control form-control-sm"
+                                           t-att-value="line.quantity"
+                                           t-att-disabled="!line.included"
+                                           min="0"
+                                           step="0.01"
+                                           t-on-change="onQuantityChange"/>
+                                </td>
+                                <td><t t-esc="line.price_extra"/></td>
+                                <td>
+                                    <button type="button" 
+                                            class="btn btn-sm btn-danger"
+                                            t-att-disabled="line.required"
+                                            t-on-click="onRemoveComponent">
+                                        <i class="fa fa-trash"/> Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+                
+                <div class="combo-totals mt-3">
+                    <strong>Precio Total del Combo: <t t-esc="totalPrice"/></strong>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" 
+                        class="btn btn-primary"
+                        t-on-click="onApplyChanges">
+                    Aplicar Cambios
+                </button>
+                <button type="button" 
+                        class="btn btn-secondary"
+                        t-on-click="onCancel">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Plantilla para notificaciones -->
+    <t t-name="ComboNotification" owl="1">
+        <div t-att-class="'alert alert-' + type">
+            <t t-if="type === 'success'">
+                <i class="fa fa-check-circle"/>
+            </t>
+            <t t-elif="type === 'warning'">
+                <i class="fa fa-exclamation-triangle"/>
+            </t>
+            <t t-elif="type === 'danger'">
+                <i class="fa fa-times-circle"/>
+            </t>
+            <t t-else="">
+                <i class="fa fa-info-circle"/>
+            </t>
+            <t t-esc="message"/>
+        </div>
+    </t>
+</templates>
+
