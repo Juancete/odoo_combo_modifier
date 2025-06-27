@@ -15,7 +15,7 @@
                     <field name="combo_line_ids">
                         <tree string="Componentes" editable="bottom">
                             <field name="sequence" widget="handle"/>
-                            <field name="product_id" domain="[('sale_ok', '=', True)]"/>
+                            <field name="default_code"/>
                             <field name="quantity"/>
                             <field name="price_extra"/>
                             <field name="required"/>
